@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BEGAWI,BEBINI,BESAKI</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #000000;
+      margin: 0;
+      padding: 20px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      width: 500px;
+      max-width: 100%;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #2c3e50;
+      font-size: 24px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #34495e;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 15px;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    input:focus, select:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #3498db;
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #2980b9;
+    }
+
+    .result {
+      margin-top: 25px;
+      padding: 20px;
+      background-color: #ecf0f1;
+      border-radius: 6px;
+      border: 1px solid #bdc3c7;
+    }
+
+    .result h2 {
+      margin-top: 0;
+      color: #2c3e50;
+      font-size: 20px;
+    }
+
+    .result p {
+      margin: 8px 0;
+      color: #34495e;
+    }
+
+    .result span {
+      font-weight: bold;
+      color: #27ae60;
+    }
+
+    .keterangan {
+      font-size: 12px;
+      color: #7f8c8d;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>PT.BEGAWI</h1>
+    <form id="gajiForm">
+      <label for="nama">Nama Karyawan:</label>
+      <input type="text" id="nama" placeholder="Masukkan nama karyawan" required>
+
+      <label for="jabatan">Jabatan:</label>
+      <input type="text" id="jabatan" placeholder="Masukkan jabatan" required>
+
+      <label for="daerah">Pilih Kabupaten/Kota</label>
+      <select id="daerah" required onchange="updateGajiTunjangan()">
+        <option value="">-- Pilih Kabupaten/Kota --</option>
+        <option value="samarinda">Samarinda</option>
+        <option value="balikpapan">Balikpapan</option>
+        <option value="bontang">Bontang</option>
+        <option value="tenggarong">Kutai Kartanegara (Tenggarong)</option>
+        <option value="tarakan">Tarakan</option>
+        <option value="berau">Berau</option>
+        <option value="penajam">Penajam Paser Utara</option>
+        <option value="kutai-timur">Kutai Timur</option>
+        <option value="kutai-barat">Kutai Barat</option>
+        <option value="paser">Paser</option>
+        <option value="mahakam-ujung">Mahakam Ujung</option>
+      </select>
+
+      <label for="gajiPokok">Gaji Pokok (Rp):</label>
+      <input type="number" id="gajiPokok" readonly>
+
+      <label for="tunjangan">Tunjangan (Rp):</label>
+      <input type="number" id="tunjangan" readonly>
+
+      <label for="thr">THR (Tunjangan Hari Raya) (Rp):</label>
+      <input type="number" id="thr" placeholder="Masukkan THR (opsional)" min="0">
+
+      <label for="jamLembur">Jam Lembur:</label>
+      <input type="number" id="jamLembur" placeholder="Masukkan jam lembur" value="0" min="0">
+
+      <button type="button" onclick="hitungGaji()">Hitung Gaji</button>
+    </form>
+
+    <div class="result" id="hasil" style="display: none;">
+      <h2>Detail Gaji:</h2>
+      <p>Nama Karyawan: <span id="outputNama"></span></p>
+      <p>Jabatan: <span id="outputJabatan"></span></p>
+      <p>Kabupaten/Kota: <span id="outputDaerah"></span></p>
+      <p>Gaji Pokok: <span id="outputGajiPokok"></span></p>
+      <p>Tunjangan: <span id="outputTunjangan"></span></p>
+      <p>THR: <span id="outputThr"></span></p>
+      <p>Jam Lembur: <span id="outputJamLembur"></span></p>
+      <p>Upah Lembur: <span id="outputUpahLembur"></span></p>
+      <p>PPh 21: <span id="outputPph21"></span></p>
+      <p>BPJS Kesehatan: <span id="outputBpjsKesehatan"></span></p>
+      <p>BPJS Ketenagakerjaan: <span id="outputBpjsKetenagakerjaan"></span></p>
+      <p>Total Potongan: <span id="outputTotalPotongan"></span></p>
+      <p>Gaji Bersih: <span id="outputGajiBersih"></span></p>
+    </div>
+    <div class="keterangan">
+      <p><strong>Keterangan:</strong></p>
+      <ul>
+        <li>Gaji pokok dan tunjangan disesuaikan dengan UMR/UMK Kalimantan Timur tahun 2025.</li>
+        <li>THR dihitung sebagai tambahan gaji bersih.</li>
+        <li>Tarif lembur: 1.5x upah per jam.</li>
+        <li>PPh 21 dihitung berdasarkan tarif progresif.</li>
+        <li>BPJS Kesehatan dan Ketenagakerjaan dihitung 1% dari gaji pokok.</li>
+      </ul>
+    </div>
+  </div>
+
+  <script>
+    // Data UMR/UMK 2025 untuk kabupaten/kota di Kalimantan Timur
+    const dataGaji = {
+      samarinda: { gajiPokok: 4200000, tunjangan: 1200000 },
+      balikpapan: { gajiPokok: 4500000, tunjangan: 1400000 },
+      bontang: { gajiPokok: 4300000, tunjangan: 1300000 },
+      tenggarong: { gajiPokok: 4100000, tunjangan: 1100000 },
+      tarakan: { gajiPokok: 4250000, tunjangan: 1250000 },
+      berau: { gajiPokok: 4000000, tunjangan: 1000000 },
+      penajam: { gajiPokok: 4050000, tunjangan: 1050000 },
+      "kutai-timur": { gajiPokok: 4150000, tunjangan: 1150000 },
+      "kutai-barat": { gajiPokok: 4100000, tunjangan: 1100000 },
+      paser: { gajiPokok: 4000000, tunjangan: 1000000 },
+      "mahakam-ujung": { gajiPokok: 3950000, tunjangan: 950000 },
+    };
+
+    const tarifLemburPerJam = 1.5;
+
+    function updateGajiTunjangan() {
+      const daerah = document.getElementById('daerah').value;
+      const gajiPokokInput = document.getElementById('gajiPokok');
+      const tunjanganInput = document.getElementById('tunjangan');
+
+      if (daerah && dataGaji[daerah]) {
+        gajiPokokInput.value = dataGaji[daerah].gajiPokok;
+        tunjanganInput.value = dataGaji[daerah].tunjangan;
+      } else {
+        gajiPokokInput.value = '';
+        tunjanganInput.value = '';
+      }
+    }
+
+    function hitungGaji() {
+      const nama = document.getElementById('nama').value;
+      const jabatan = document.getElementById('jabatan').value;
+      const daerah = document.getElementById('daerah').value;
+      const gajiPokok = parseFloat(document.getElementById('gajiPokok').value);
+      const tunjangan = parseFloat(document.getElementById('tunjangan').value);
+      const thr = parseFloat(document.getElementById('thr').value) || 0;
+      const jamLembur = parseFloat(document.getElementById('jamLembur').value) || 0;
+
+      if (!nama || !jabatan || !daerah || isNaN(gajiPokok) || isNaN(tunjangan)) {
+        alert("Harap isi semua field dengan benar!");
+        return;
+      }
+
+      const upahPerJam = gajiPokok / 173;
+      const upahLembur = jamLembur * upahPerJam * tarifLemburPerJam;
+
+      const penghasilanBrutoTahunan = (gajiPokok + tunjangan + upahLembur + thr) * 12;
+      const ptkp = 54000000;
+      const penghasilanKenaPajak = Math.max(0, penghasilanBrutoTahunan - ptkp);
+
+      let pph21Tahunan;
+      if (penghasilanKenaPajak <= 60000000) {
+        pph21Tahunan = penghasilanKenaPajak * 0.05;
+      } else if (penghasilanKenaPajak <= 250000000) {
+        pph21Tahunan = 3000000 + (penghasilanKenaPajak - 60000000) * 0.15;
+      } else if (penghasilanKenaPajak <= 500000000) {
+        pph21Tahunan = 34500000 + (penghasilanKenaPajak - 250000000) * 0.25;
+      } else if (penghasilanKenaPajak <= 5000000000) {
+        pph21Tahunan = 99500000 + (penghasilanKenaPajak - 500000000) * 0.30;
+      } else {
+        pph21Tahunan = 149500000 + (penghasilanKenaPajak - 5000000000) * 0.35;
+      }
+      const pph21Bulanan = pph21Tahunan / 12;
+
+      const bpjsKesehatan = gajiPokok * 0.01;
+      const bpjsKetenagakerjaan = gajiPokok * 0.01;
+      const totalPotongan = pph21Bulanan + bpjsKesehatan + bpjsKetenagakerjaan;
+
+      const gajiBersih = gajiPokok + tunjangan + upahLembur + thr - totalPotongan;
+
+      document.getElementById('outputNama').textContent = nama;
+      document.getElementById('outputJabatan').textContent = jabatan;
+      document.getElementById('outputDaerah').textContent = document.getElementById('daerah').selectedOptions[0].text;
+      document.getElementById('outputGajiPokok').textContent = `Rp ${gajiPokok.toLocaleString('id-ID')}`;
+      document.getElementById('outputTunjangan').textContent = `Rp ${tunjangan.toLocaleString('id-ID')}`;
+      document.getElementById('outputThr').textContent = `Rp ${thr.toLocaleString('id-ID')}`;
+      document.getElementById('outputJamLembur').textContent = jamLembur;
+      document.getElementById('outputUpahLembur').textContent = `Rp ${upahLembur.toLocaleString('id-ID')}`;
+      document.getElementById('outputPph21').textContent = `Rp ${pph21Bulanan.toLocaleString('id-ID')}`;
+      document.getElementById('outputBpjsKesehatan').textContent = `Rp ${bpjsKesehatan.toLocaleString('id-ID')}`;
+      document.getElementById('outputBpjsKetenagakerjaan').textContent = `Rp ${bpjsKetenagakerjaan.toLocaleString('id-ID')}`;
+      document.getElementById('outputTotalPotongan').textContent = `Rp ${totalPotongan.toLocaleString('id-ID')}`;
+      document.getElementById('outputGajiBersih').textContent = `Rp ${gajiBersih.toLocaleString('id-ID')}`;
+
+      document.getElementById('hasil').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
